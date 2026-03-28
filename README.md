@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+# 🚗 FAST Rideshare
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The carpooling platform for FASTians by FASTians.
+
+## About
+
+FAST Rideshare is a community-driven ride-sharing application designed for FAST (Federal Urdu University of Arts, Science and Technology) students. The platform connects students to share rides, reduce commuting costs, and build a safer campus transportation network.
+
+### Why use FAST Rideshare?
+- **Save Money** – Split commute expenses with fellow students
+- **Verified Users** – Travel securely with verified campus members
+- **Reduce Traffic** – Help minimize campus parking congestion
+- **Community** – Connect with your fellow FASTians
+
+## Features
+
+- 🔐 **User Authentication** – Secure login and registration
+- 🚕 **Post Rides** – Share your commute and earn money
+- 🔍 **Browse Rides** – Find available rides matching your schedule
+- 📋 **Ride Details** – View detailed information about each ride
+- 💾 **My Bookings** – Track your booked rides
+- 👤 **User Profiles** – View driver and passenger profiles
+- ⚙️ **Dashboard** – Manage your account and preferences
+- 🔑 **Change Password** – Update your security settings
+
+## Tech Stack
+
+- **Frontend Framework:** React 19
+- **State Management:** Redux Toolkit
+- **Routing:** React Router v7
+- **Styling:** CSS
+- **Build Tool:** Create React App
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/YOUR_USERNAME/campus-rides.git
+cd campus-rides
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm start
+```
+
+The app will open at [http://localhost:3000](http://localhost:3000)
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Runs the app in development mode. The page reloads on code changes.
 
 ### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in interactive watch mode.
 
 ### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Builds the app for production to the `build` folder with optimizations.
 
 ### `npm run eject`
+Exposes the configuration (one-way operation).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Project Structure
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+src/
+├── pages/           # Route components
+│   ├── Login.js
+│   ├── Register.js
+│   ├── Dash.js
+│   ├── AllRds.js
+│   ├── RdDets.js
+│   ├── PstRd.js
+│   ├── MyBks.js
+│   ├── RqRd.js
+│   ├── UsrProf.js
+│   └── ChgPwd.js
+├── slices/          # Redux slices
+│   ├── userSlice.js
+│   └── rideSlice.js
+├── App.js           # Main app component
+├── Nav.js           # Navigation component
+├── store.js         # Redux store configuration
+├── constants.js     # App constants
+└── styles.css       # Global styles
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Contributing
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Learn More
+## License
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This project is open source and available under the MIT License.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contact
 
-### Code Splitting
+For questions or feedback, please reach out to the development team.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Built with ❤️ for FASTians
