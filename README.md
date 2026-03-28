@@ -4,7 +4,7 @@ The carpooling platform for FASTians by FASTians.
 
 ## About
 
-FAST Rideshare is a community-driven ride-sharing application designed for FAST (Federal Urdu University of Arts, Science and Technology) students. The platform connects students to share rides, reduce commuting costs, and build a safer campus transportation network.
+FAST Rideshare is a community-driven ride-sharing application designed for FAST NUCES students. The platform connects students to share rides, reduce commuting costs, and build a safer campus transportation network.
 
 ### Why use FAST Rideshare?
 - **Save Money** – Split commute expenses with fellow students
