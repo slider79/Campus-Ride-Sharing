@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { doOut } from './slices/userSlice';
 
-// navbar set krdi hai yahan, simple scene hai
+// navbar ka nizam
 export default function Nav() 
 {
   const cUsr = useSelector(s => s.usr.currUsr);
@@ -12,7 +12,6 @@ export default function Nav()
 
   const hndlOut = () => 
     {
-    // dafa karo isko, session out
     dsp(doOut());
       nav('/login');
   }
@@ -27,9 +26,19 @@ export default function Nav()
       (
         <>
           <Link to="/dashboard">Dashboard</Link>
-          <Link to="/post-ride">Post Ride</Link>
-            <Link to="/req-ride">Request Ride</Link>
+          
+          {/* agar banda captain hai to hi ride post karay ga */}
+          {cUsr?.isCapt && <Link to="/post-ride">Post Ride</Link>}
+          
+          {/* Admin k ilawa har koi lift mang sakta hai, even captains */}
+          {cUsr?.role !== 'admin' && <Link to="/req-ride">Request Ride</Link>}
+          
           <Link to="/my-books">My Bookings</Link>
+          
+          {/* admin and captain logic */}
+          {cUsr?.role === 'admin' && <Link to="/admin">Admin Dash</Link>}
+          {cUsr?.role === 'passenger' && !cUsr?.isCapt && <Link to="/become-captain">Be a Captain</Link>}
+          
             <Link to="/chg-pwd">Change Pwd</Link>
           <button className="btn-sec" style={{padding: '4px 10px'}} onClick={hndlOut}>Logout</button>
         </>
