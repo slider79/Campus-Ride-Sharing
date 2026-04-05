@@ -4,7 +4,7 @@ import './styles.css';
 
 // Components & Pages
 import Nav from './Nav';
-import ProtectedRoute from './ProtectedRoute'; // Import our new bouncer
+import ProtectedRoute from './ProtectedRoute'; 
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dash from './pages/Dash';
@@ -14,7 +14,7 @@ import PstRd from './pages/PstRd';
 import MyBks from './pages/MyBks';
 import RqRd from './pages/RqRd';
 import UsrProf from './pages/UsrProf';
-import ChgPwd from './pages/ChgPwd';
+import MyProfile from './pages/MyProfile'; // New import
 import AdminDash from './pages/AdminDash';
 import CaptReg from './pages/CaptReg';
 
@@ -24,7 +24,6 @@ export default function App()
     <BrowserRouter>
       <Nav />
         <Routes>
-        {/* Public Routes - Anyone can access these */}
         <Route path="/" element=
         {
             <div className="mainCont">
@@ -46,17 +45,18 @@ export default function App()
         <Route path="/register" element={<Register />} />
         <Route path="/rides" element={<AllRds />} />
 
-        {/* Protected Routes - Requires Login */}
+        {/* Protected Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><Dash /></ProtectedRoute>} />
         <Route path="/ride/:id" element={<ProtectedRoute><RdDets /></ProtectedRoute>} />
         <Route path="/post-ride" element={<ProtectedRoute><PstRd /></ProtectedRoute>} />
         <Route path="/my-books" element={<ProtectedRoute><MyBks /></ProtectedRoute>} />
         <Route path="/req-ride" element={<ProtectedRoute><RqRd /></ProtectedRoute>} />
         <Route path="/profile/:nm" element={<ProtectedRoute><UsrProf /></ProtectedRoute>} />
-        <Route path="/chg-pwd" element={<ProtectedRoute><ChgPwd /></ProtectedRoute>} />
         <Route path="/become-captain" element={<ProtectedRoute><CaptReg /></ProtectedRoute>} />
         
-        {/* Strictly Admin Only Route */}
+        {/* New Profile Route replacing chg-pwd */}
+        <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+        
         <Route path="/admin" element={<ProtectedRoute reqRole="admin"><AdminDash /></ProtectedRoute>} />
         
       </Routes>

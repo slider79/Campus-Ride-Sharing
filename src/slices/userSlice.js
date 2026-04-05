@@ -10,7 +10,6 @@ const userSlice = createSlice({
   reducers: {
     regUsr: (st, act) => 
         {
-      // Mandatory signup using university email credentials
         st.usrList.push({...act.payload, role: 'passenger', isCapt: false, captPending: false});
     },
     doLog: (st, act) => {
@@ -29,15 +28,22 @@ const userSlice = createSlice({
         if(i > -1) st.usrList[i].pwd = act.payload;
       }
     },
-    // Captain Registration portal logic
+    // New logic to update username
+    updtProf: (st, act) => {
+        if(st.currUsr) {
+            st.currUsr.nm = act.payload;
+            const i = st.usrList.findIndex(u => u.eml === st.currUsr.eml);
+            if(i > -1) st.usrList[i].nm = act.payload;
+        }
+    },
     reqCapt: (st, act) => {
         if(st.currUsr) {
             st.currUsr.captPending = true;
             st.currUsr.vehDeets = act.payload.veh; 
             st.currUsr.plate = act.payload.plate; 
             st.currUsr.color = act.payload.color; 
-            st.currUsr.idPic = act.payload.idPic; // store Base64 student ID
-            st.currUsr.licPic = act.payload.licPic; // store Base64 License
+            st.currUsr.idPic = act.payload.idPic; 
+            st.currUsr.licPic = act.payload.licPic; 
             
             const i = st.usrList.findIndex(u => u.eml === st.currUsr.eml);
             if(i > -1) {
@@ -50,17 +56,16 @@ const userSlice = createSlice({
             }
         }
     },
-    // Admin Approval Dashboard logic
     aprCapt: (st, act) => {
         const i = st.usrList.findIndex(u => u.eml === act.payload);
         if(i > -1) {
             st.usrList[i].captPending = false;
-            st.usrList[i].isCapt = true; // manual approval before hosting rides
+            st.usrList[i].isCapt = true; 
             st.usrList[i].role = 'captain';
         }
     }
   }
 });
 
-export const { regUsr, doLog, doOut, chgPwd, reqCapt, aprCapt } = userSlice.actions;
+export const { regUsr, doLog, doOut, chgPwd, updtProf, reqCapt, aprCapt } = userSlice.actions;
 export default userSlice.reducer;
