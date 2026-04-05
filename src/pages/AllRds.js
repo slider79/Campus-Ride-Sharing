@@ -13,7 +13,8 @@ export default function AllRds()
 
   const srchEvt = (e) => setSPrm({search: e.target.value});
 
-    const fList = rList.filter(r => r.dest.toLowerCase().includes(qry.toLowerCase()) || r.pick.toLowerCase().includes(qry.toLowerCase()));
+    // sirf active rides filter karo
+    const fList = rList.filter(r => r.actv === true && (r.dest.toLowerCase().includes(qry.toLowerCase()) || r.pick.toLowerCase().includes(qry.toLowerCase())));
   const fReqList = reqList.filter(r => r.dest.toLowerCase().includes(qry.toLowerCase()) || r.pick.toLowerCase().includes(qry.toLowerCase()));
 
   return (

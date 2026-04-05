@@ -1,5 +1,6 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { endRide } from '../slices/rideSlice';
 
 // dashboard ka nizam, kon kahan ja rha hai sab yahan hai
 export default function Dash() 
@@ -8,9 +9,16 @@ export default function Dash()
       const rList = useSelector(s => s.rd.rdList);
     const reqList = useSelector(s => s.rd.reqRds);
   const [tab, setTab] = React.useState('posted'); // dashboard tabs
+    const dsp = useDispatch();
 
     const myPosts = rList.filter(r => r.dNm === cUsr?.nm);
       const myReqs = reqList.filter(r => r.nm === cUsr?.nm);
+
+    const hndlEnd = (id) => {
+        // ride end maro taakay board se hat jaye
+        dsp(endRide(id));
+        alert("Ride marked as completed!");
+    }
 
     return(
         <div className="mainCont">
@@ -28,9 +36,17 @@ export default function Dash()
                     {myPosts.length === 0 ? <p>Tumnay koi gari nahi nikali abhi tak.</p> : null}
                       {myPosts.map((r, i) => 
                     (
-                        <div key={i} className="boxCrd">
+                        <div key={i} className="boxCrd" style={{ opacity: r.actv ? 1 : 0.6 }}>
                             <strong>{r.pick} to {r.dest}</strong>
                               <div className="smText">Time: {r.dTime} | Seats left: {r.avlSts}</div>
+                              <div className="smText" style={{color: r.actv ? 'green' : 'red', fontWeight: 'bold'}}>
+                                  Status: {r.actv ? 'Active' : 'Completed'}
+                              </div>
+                              {r.actv && (
+                                  <button className="btn-sec" style={{marginTop: '10px', fontSize: '12px', padding: '6px 12px'}} onClick={() => hndlEnd(r.rId)}>
+                                      Mark as Completed
+                                  </button>
+                              )}
                         </div>
                     ))}
                 </div>

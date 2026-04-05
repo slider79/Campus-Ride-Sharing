@@ -23,9 +23,17 @@ const rideSlice = createSlice({
     // A chat module for Captains to coordinate with multiple passengers[cite: 2]
     sndMsg: (st, act) => {
         st.chats.push(act.payload);
+    },
+
+    // Add this right below sndMsg
+    endRide: (st, act) => {
+        const r = st.rdList.find(x => x.rId === act.payload);
+        if(r) {
+            r.actv = false;
+        }
     }
   }
 });
 
-export const { addRd, bkSeat, reqRd, sndMsg } = rideSlice.actions;
+export const { addRd, bkSeat, reqRd, sndMsg, endRide } = rideSlice.actions;
 export default rideSlice.reducer;
