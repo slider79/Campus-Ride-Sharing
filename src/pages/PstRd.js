@@ -4,11 +4,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addRd } from '../slices/rideSlice';
 import { GoogleMap, useJsApiLoader, Marker, Polyline } from '@react-google-maps/api';
 
-// fast uni k coordinates
 const fastLoc = { lat: 31.4812, lng: 74.3032 };
 const mapSty = { width: '100%', height: '300px', borderRadius: '6px', marginBottom: '15px' };
 
-// gari nikalne ka time
 export default function PstRd() 
 {
   const [dTime, setDTime] = React.useState('');
@@ -26,7 +24,6 @@ export default function PstRd()
 
   const { isLoaded } = useJsApiLoader({ id: 'gmap-script', googleMapsApiKey: "" }); // dev mode map
 
-  // location ka naam nikalnay ka free jugaad
   const getAddyText = async (lt, lg) => 
   {
       setAddy("Loading address...");
@@ -52,16 +49,16 @@ export default function PstRd()
   {
     e.preventDefault();
       const seatsNum = parseInt(avlSts);
-    if(seatsNum < 1 || seatsNum > 7) return alert("Seats 1-7 k darmian");
-      if(!/^03\d{9}$/.test(cnt)) return alert("Number theek likho");
-    if(addy.includes('Drag pin')) return alert("Map pe location set karo");
+    if(seatsNum < 1 || seatsNum > 7) return alert("Seats must be between 1 and 7");
+      if(!/^03\d{9}$/.test(cnt)) return alert("Invalid phone number format");
+    if(addy.includes('Drag pin')) return alert("Please set a location on the map");
 
-    // autofill logic: ek side map ki location, dusri side FAST
+    // autofill logic
     const pick = toFast ? addy : "FAST NUCES";
       const dest = toFast ? "FAST NUCES" : addy;
     
-    // Gari details DB se uthai hain idhar redundancy khatam
-    const veh = cUsr.vehDeets || "Captain's Car";
+    // Combine the three fields into one clean display string
+    const veh = cUsr.vehDeets ? `${cUsr.vehDeets} (${cUsr.color}) - ${cUsr.plate}` : "Captain's Car";
 
       dsp(addRd({ dNm: cUsr.nm, pick, dest, dTime, avlSts: seatsNum, veh, cnt, nts: "Location set via Google Maps" }));
     nav('/rides');

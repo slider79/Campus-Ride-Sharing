@@ -33,21 +33,29 @@ const userSlice = createSlice({
     reqCapt: (st, act) => {
         if(st.currUsr) {
             st.currUsr.captPending = true;
-            st.currUsr.vehDeets = act.payload.veh; // upload vehicle details[cite: 2]
-            st.currUsr.idPic = act.payload.idPic; // upload student IDs[cite: 2]
+            st.currUsr.vehDeets = act.payload.veh; 
+            st.currUsr.plate = act.payload.plate; 
+            st.currUsr.color = act.payload.color; 
+            st.currUsr.idPic = act.payload.idPic; // store Base64 student ID
+            st.currUsr.licPic = act.payload.licPic; // store Base64 License
+            
             const i = st.usrList.findIndex(u => u.eml === st.currUsr.eml);
             if(i > -1) {
                 st.usrList[i].captPending = true;
                 st.usrList[i].vehDeets = act.payload.veh;
+                st.usrList[i].plate = act.payload.plate;
+                st.usrList[i].color = act.payload.color;
+                st.usrList[i].idPic = act.payload.idPic;
+                st.usrList[i].licPic = act.payload.licPic;
             }
         }
     },
-    // Admin Approval Dashboard logic[cite: 2]
+    // Admin Approval Dashboard logic
     aprCapt: (st, act) => {
         const i = st.usrList.findIndex(u => u.eml === act.payload);
         if(i > -1) {
             st.usrList[i].captPending = false;
-            st.usrList[i].isCapt = true; // manual approval before hosting rides[cite: 2]
+            st.usrList[i].isCapt = true; // manual approval before hosting rides
             st.usrList[i].role = 'captain';
         }
     }
