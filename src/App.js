@@ -2,8 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import './styles.css';
 
-// Importing all the pages we split up, plus the new MERN project ones
+// Components & Pages
 import Nav from './Nav';
+import ProtectedRoute from './ProtectedRoute'; // Import our new bouncer
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dash from './pages/Dash';
@@ -17,13 +18,13 @@ import ChgPwd from './pages/ChgPwd';
 import AdminDash from './pages/AdminDash';
 import CaptReg from './pages/CaptReg';
 
-// main app component, bismillah parh k shuru karo
 export default function App() 
 {
   return (
     <BrowserRouter>
       <Nav />
         <Routes>
+        {/* Public Routes - Anyone can access these */}
         <Route path="/" element=
         {
             <div className="mainCont">
@@ -41,20 +42,23 @@ export default function App()
                 </div>
             </div>
         } />
-          <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dash />} />
         <Route path="/rides" element={<AllRds />} />
-          <Route path="/ride/:id" element={<RdDets />} />
-        <Route path="/post-ride" element={<PstRd />} />
-          <Route path="/my-books" element={<MyBks />} />
-        <Route path="/req-ride" element={<RqRd />} />
-          <Route path="/profile/:nm" element={<UsrProf />} />
-        <Route path="/chg-pwd" element={<ChgPwd />} />
+
+        {/* Protected Routes - Requires Login */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dash /></ProtectedRoute>} />
+        <Route path="/ride/:id" element={<ProtectedRoute><RdDets /></ProtectedRoute>} />
+        <Route path="/post-ride" element={<ProtectedRoute><PstRd /></ProtectedRoute>} />
+        <Route path="/my-books" element={<ProtectedRoute><MyBks /></ProtectedRoute>} />
+        <Route path="/req-ride" element={<ProtectedRoute><RqRd /></ProtectedRoute>} />
+        <Route path="/profile/:nm" element={<ProtectedRoute><UsrProf /></ProtectedRoute>} />
+        <Route path="/chg-pwd" element={<ProtectedRoute><ChgPwd /></ProtectedRoute>} />
+        <Route path="/become-captain" element={<ProtectedRoute><CaptReg /></ProtectedRoute>} />
         
-        {/* Naye routes yahan hain */}
-        <Route path="/admin" element={<AdminDash />} />
-        <Route path="/become-captain" element={<CaptReg />} />
+        {/* Strictly Admin Only Route */}
+        <Route path="/admin" element={<ProtectedRoute reqRole="admin"><AdminDash /></ProtectedRoute>} />
+        
       </Routes>
     </BrowserRouter>
   );

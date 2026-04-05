@@ -58,6 +58,14 @@ npm install @react-google-maps/api
 ```bash
 npm start
 ```
+4.  Set Execution policy for current terminal (If required):
+
+<!-- end list -->
+
+```bash
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+```
+
 
 The app will open at [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
 
