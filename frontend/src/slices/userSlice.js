@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { registerUserApi, loginUserApi } from '../services/api';
+import { registerUserApi, loginUserApi, fetchAllUsersApi, approveCaptainApi } from '../services/api';
+
 
 const savedToken = localStorage.getItem('token');
 const savedUser = localStorage.getItem('user');
@@ -28,11 +29,29 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+
+export const fetchAllUsers = createAsyncThunk(
+  'usr/fetchAllUsers',
+  async (token, { rejectWithValue }) => {
+    try { return await fetchAllUsersApi(token); } 
+    catch (error) { return rejectWithValue(error.message); }
+  }
+);
+
+export const approveCaptain = createAsyncThunk(
+  'usr/approveCaptain',
+  async ({ userId, token }, { rejectWithValue }) => {
+    try { return await approveCaptainApi(userId, token); } 
+    catch (error) { return rejectWithValue(error.message); }
+  }
+);
+
 const userSlice = createSlice({
   name: 'usr',
   initialState: {
     currUsr: savedUser ? JSON.parse(savedUser) : null,
     token: savedToken || null,
+    usrList: [], 
     status: 'idle',
     error: null,
     message: null
@@ -105,6 +124,16 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.usrList = action.payload; 
+      })
+      .addCase(approveCaptain.fulfilled, (state, action) => {
+        const updatedUser = action.payload;
+        const index = state.usrList.findIndex(u => u._id === updatedUser._id);
+        if(index !== -1) {
+            state.usrList[index] = updatedUser;
+        }
       });
   }
 });

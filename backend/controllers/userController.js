@@ -67,4 +67,25 @@ const getAllUsers = async (request, response) => {
   }
 };
 
-module.exports = {registerUser, loginUser, logoutUser, changePassword, getAllUsers};
+
+const approveCaptain = async (request, response) => {
+    try {
+        // Sirf admin allow hai, baki sab ko laat maro
+        if(request.userData.role !== 'admin') {
+            return response.status(403).json({message: "Tu admin nahi hai bhai, bahar nikal"});
+        }
+
+        let pendingUser = await userModel.findById(request.params.id);
+        if(!pendingUser) return response.status(404).json({message: "User hi nahi mila"});
+
+        // Captain bana do
+        pendingUser.captPending = false;
+        pendingUser.isCapt = true;
+        pendingUser.role = 'captain';
+        
+        await pendingUser.save();
+        response.json(pendingUser);
+    } catch(error) { response.status(500).json({message: "approval logic urr gayi"}); }
+}
+
+module.exports = {registerUser, loginUser, logoutUser, changePassword, getAllUsers, approveCaptain};

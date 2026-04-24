@@ -66,3 +66,18 @@ export const fetchMyBookingsApi = async (token) => {
   });
   return handleResponse(response);
 };
+
+export const fetchAllUsersApi = async (token) => {
+  const response = await fetch(`${API_BASE}/users/all`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return handleResponse(response);
+};
+
+export const approveCaptainApi = async (userId, token) => {
+  const response = await fetch(`${API_BASE}/users/approve/${userId}`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return handleResponse(response);
+};

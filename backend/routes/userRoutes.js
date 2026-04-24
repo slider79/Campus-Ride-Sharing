@@ -8,5 +8,7 @@ const userController = require('../controllers/userController');
 userRouter.post('/login', userController.loginUser);
   userRouter.post('/logout', checkAuth, userController.logoutUser); // protected q k requriement tha login walo ke liye waise we could look at this later for full project waqt but khair
 userRouter.put('/changePassword', checkAuth, userController.changePassword); 
+userRouter.get('/all', checkAuth, userController.getAllUsers); // Sab users lao
+userRouter.put('/approve/:id', checkAuth, userController.approveCaptain); // Captain ko pass karo
 
 module.exports = userRouter;
