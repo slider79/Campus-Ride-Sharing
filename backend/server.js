@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
  const app = express();
+ const userModel = require('./models/userModel');
 
   app.use(cors()); 
    app.use(express.json());
@@ -9,8 +10,22 @@ const cors = require('cors');
 // db connect karna zaroori hai warna frontend walo (also me) ki mehnat zaya
 
 mongoose.connect('mongodb://127.0.0.1:27017/campusRideDb')
-.then(()=> console.log("db chal gaya shukar hai bhai"))
-  .catch((error)=>console.log("db ka phadda", error))
+.then(async () => {
+    console.log("db chal gaya shukar hai bhai");
+    
+    // Admin Boss ko zinda karo
+    const adminExists = await userModel.findOne({email: 'admin@nu.edu.pk'});
+    if(!adminExists) {
+        await userModel.create({
+            userName: 'Admin Boss', 
+            email: 'admin@nu.edu.pk', 
+            password: 'admin', 
+            role: 'admin'
+        });
+        console.log("Admin Boss ki entry ho gayi hai db me");
+    }
+})
+.catch((error)=>console.log("db ka phadda", error));
 
 // alag routes
 const userRoutes = require('./routes/userRoutes');

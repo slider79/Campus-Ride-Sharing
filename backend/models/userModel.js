@@ -1,20 +1,19 @@
 const mongoose = require('mongoose');
 
-// user ka model, seedhi seedhi cheezain
- const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   userName: String,
-    email: {type:String, required:true, unique:true},
-  password: {type:String, required:true}, // password ko hash kon kare assignment hi to hai kon hack kar raha hai hamari app
-   role: {type:String, default:'passenger'},
-  isCapt: { type: Boolean, default: false },
-  captPending: { type: Boolean, default: false },
-  roll: String,
-  degree: String,
+  email: {type:String, required:true, unique:true},
+  password: {type:String, required:true}, //no use to hash em coz koi bhi hamein hack to nhi kr raha its still an assignment :P
+  role: {type:String, default:'passenger'},
+  roll: String,     
+  degree: String,   
+  isCapt: {type:Boolean, default:false},
+  captPending: {type:Boolean, default:false},
   vehDeets: String,
   plate: String,
   color: String,
   idPic: String,
   licPic: String
- });
+});
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('user', userSchema);

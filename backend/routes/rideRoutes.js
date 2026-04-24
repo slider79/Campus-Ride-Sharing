@@ -8,5 +8,7 @@ rideRouter.get('/myBookings', checkAuth, rideController.getMyBookings); // prote
 rideRouter.get('/:id', rideController.getRideDetails); // public ride details
  rideRouter.post('/postRide', checkAuth, rideController.postNewRide); // protected kyunke post wese thori karsakta koi
 rideRouter.post('/book/:id', checkAuth, rideController.bookSeat); // protected seat book
+rideRouter.post('/request', checkAuth, rideController.postRequest); // Passenger drops pin
+rideRouter.get('/requests/all', rideController.getRequests); // Fetch all pins
 
 module.exports = rideRouter;

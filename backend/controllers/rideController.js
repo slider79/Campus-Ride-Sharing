@@ -1,5 +1,6 @@
 const rideModel = require('../models/rideModel');
 const bookingModel = require('../models/bookingModel');
+const requestModel = require('../models/requestModel');
 
 const getAvailableRides = async (request, response) => {
   try{
@@ -73,4 +74,23 @@ const getMyBookings = async (request, response) => {
      } catch(error) { response.status(500).json({message: "masla hai idhar my bookings me"}); }
 }
 
-module.exports = {getAvailableRides, postNewRide, getRideDetails, bookSeat, getMyBookings};
+const postRequest = async (request, response) => {
+    try {
+        const newReq = new requestModel({
+            userId: request.userData.id,
+            location: request.body.location
+        });
+        await newReq.save();
+        response.json({message: "Pin drop hogya hai, koi farishta aake pick karlega"});
+    } catch (e) { response.status(500).json({message: "request urr gayi"}); }
+}
+
+
+const getRequests = async (request, response) => {
+    try {
+        const allReqs = await requestModel.find({isActive: true}).populate('userId', 'userName');
+        response.json(allReqs);
+    } catch (e) { response.status(500).json({message: "get requests urr gaya"}); }
+}
+
+module.exports = {getAvailableRides, postNewRide, getRideDetails, bookSeat, getMyBookings, postRequest, getRequests};
