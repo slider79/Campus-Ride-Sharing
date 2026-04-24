@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { bkSeat, sndMsg } from '../slices/rideSlice';
+import { bookSeat, sndMsg } from '../slices/rideSlice';
 
 export default function RdDets() 
 {
@@ -10,6 +10,7 @@ export default function RdDets()
   // Filtering chats specific to this exact ride
   const chats = useSelector(s => s.rd.chats.filter(c => c.rId === id)); 
   const cUsr = useSelector(s => s.usr.currUsr);
+  const token = useSelector((s) => s.usr.token);
   const dsp = useDispatch();
   const nav = useNavigate();
   
@@ -17,15 +18,19 @@ export default function RdDets()
 
   const rObj = rList.find(x => x.rId === id);
 
-  const bkSeatBtn = () => 
+  const bkSeatBtn = async () => 
   {
     if(!cUsr) {
         alert("Login required bro");
         nav('/login');
         return;
     }
-    dsp(bkSeat({rId: id, uEml: cUsr.eml, pick: rObj.pick, dest: rObj.dest}));
-    alert("Seat booked successfully!");
+    try {
+      await dsp(bookSeat({ rideId: id, token })).unwrap();
+      alert("Seat booked successfully!");
+    } catch (err) {
+      alert(err || 'Booking failed.');
+    }
   }
 
   // Handle sending chat messages
@@ -34,7 +39,7 @@ export default function RdDets()
       if(!cUsr) return alert("You need to be logged in to chat.");
       if(!msg.trim()) return; // Prevent empty messages
       
-      dsp(sndMsg({rId: id, sndr: cUsr.nm, txt: msg}));
+      dsp(sndMsg({rId: id, sndr: cUsr.userName || cUsr.nm, txt: msg}));
       setMsg('');
   }
 

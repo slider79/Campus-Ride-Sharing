@@ -13,31 +13,35 @@ const registerUser = async (request, response) => {
     const newUser = new userModel({
      userName: request.body.userName,
      email: request.body.email,
-       password: request.body.password 
+       password: request.body.password,
+       roll: request.body.roll,
+       degree: request.body.degree
     });
     await newUser.save();
      response.json({message: "mubarak ho id ban gayi"});
  }catch(error){
     console.log(error);
-    response.status(500).json({message: "server thak gaya, FAST ka internet nai hai jo har waqt chalay, dubara try karo"});
+    response.status(500).json({message: "server thak gaya, FAST ke internet pe chalao ge to yahi hoga, dubara try karo"});
  }
 }
 
 const loginUser = async (request, response) => {
    try{
       const foundUser = await userModel.findOne({email: request.body.email, password: request.body.password});
-        if(!foundUser) return response.status(400).json({message: "email ya password ghalat dalte ho phir boltay ho chalta nai"});
+        if(!foundUser) return response.status(400).json({message: "email ya password ghalat dalte ho phir boltay ho chalta nai tsk tsk"});
 
        // token pack kardo
        const userToken = jwtToken.sign({id: foundUser._id, role: foundUser.role}, secretKey);
-     response.json({token: userToken, user: foundUser, message: "andar a jao dost"});
+       const userObj = foundUser.toObject();
+       delete userObj.password;
+     response.json({token: userToken, user: userObj, message: "andar aa "});
    }catch(error){ response.status(500).json({message: "masla ho gaya bhai"});}
 }
 
 const logoutUser = (request, response) => {
    // wese logout frontend pe token delete karne se hota hai
-   // par inhonay rest api mangi thi tou yeh lo chutyapa route
-   response.json({message: "logout ho gaye aap, apna khayal rakhna"});
+   // par inhonay rest api mangi thi tou route likhni par gayi
+   response.json({message: "logout ho gaye aap, apna khayal rakhna, pls wapis na aana"});
 }
 
 const changePassword = async (request, response) => {
@@ -45,12 +49,22 @@ const changePassword = async (request, response) => {
     // find then update, save karne mein alag maza hai compare to findByIdAndUpdate
      let foundUser = await userModel.findById(request.userData.id);
      if(foundUser.password !== request.body.oldPassword) {
-         return response.status(400).json({message: "purana password to sahi daalo bhai kahan dimagh hai"});
+         return response.status(400).json({message: "purana password to sahi daalo bhai kahan hai apka dimagh"});
      }
       foundUser.password = request.body.newPassword;
       await foundUser.save();
        response.json({message: "password change hogya party karo ab"});
- } catch(error){ response.status(500).json({message: "code fatt gaya change pass me"}); }
+ } catch(error){ response.status(500).json({message: "code urr gaya change pass me"}); }
 }
 
-module.exports = {registerUser, loginUser, logoutUser, changePassword};
+const getAllUsers = async (request, response) => {
+  try {
+    const users = await userModel.find().select('-password');
+    response.json(users);
+  } catch(error) {
+    console.log(error);
+    response.status(500).json({message: 'Cannot fetch users'});
+  }
+};
+
+module.exports = {registerUser, loginUser, logoutUser, changePassword, getAllUsers};

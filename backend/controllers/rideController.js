@@ -3,62 +3,66 @@ const bookingModel = require('../models/bookingModel');
 
 const getAvailableRides = async (request, response) => {
   try{
-      // duniya ka sab se bekaar search method
-      // database se sab uthao phir loop mardo (inefficient approach exactly as requested)
       let allRides = await rideModel.find();
         let filteredRides = [];
 
      for(let index=0; index<allRides.length; index++){
         let isMatch = true;
-       // agar query me from or to aya tou match kar warna sab nikaal do
-       if(request.query.fromLocation && allRides[index].fromLocation !== request.query.fromLocation) isMatch = false;
-          if(request.query.toLocation && allRides[index].toLocation !== request.query.toLocation) isMatch = false;
+       if(request.query.pick && allRides[index].pick !== request.query.pick) isMatch = false;
+          if(request.query.dest && allRides[index].dest !== request.query.dest) isMatch = false;
 
         if(isMatch) filteredRides.push(allRides[index]);
      }
 
      response.json(filteredRides);
-  }catch(error){ response.status(500).json({message:"lafra hogya get rides me"}); }
+  }catch(error){ response.status(500).json({message:"matter hogya get rides me"}); }
 }
 
 const postNewRide = async (request, response) => {
    try{
      const newRide = new rideModel({
        captainId: request.userData.id,
-         fromLocation: request.body.fromLocation,
-       toLocation: request.body.toLocation,
-         availableSeats: request.body.availableSeats,
+       rId: Math.random().toString(36).substring(2, 10),
+         dNm: request.body.dNm,
+       pick: request.body.pick,
+         dest: request.body.dest,
+         dTime: request.body.dTime,
+         veh: request.body.veh,
+         cnt: request.body.cnt,
+         nts: request.body.nts,
+         avlSts: request.body.avlSts,
          price: request.body.price
      });
       await newRide.save();
-     response.json({message: "ride daal di hai, sawari ka wait karlo"});
-   } catch(error) { response.status(500).json({message:"error bro"}); }
+     response.json(newRide);
+   } catch(error) { console.log(error); response.status(500).json({message:"error bro"}); }
 }
 
 const getRideDetails = async (request, response) => {
     try{
-       const rideDetails = await rideModel.findById(request.params.id);
-         if(!rideDetails) return response.status(404).json({message: "aisi koi ride zinda nahi, wapas gari mooro"});
+       const rideDetails = await rideModel.findOne({ rId: request.params.id });
+         if(!rideDetails) return response.status(404).json({message: "aisi koi ride nahi, wapas gari mooro"});
          response.json(rideDetails);
     } catch(error) { response.status(500).json({message: "error boss"}); }
 }
 
 const bookSeat = async (request, response) => {
    try{
-      let foundRide = await rideModel.findById(request.params.id);
-         if(foundRide.availableSeats <= 0){
+      let foundRide = await rideModel.findOne({ rId: request.params.id });
+         if(!foundRide) return response.status(404).json({message: "aisi koi ride nahi, wapas gari mooro"});
+         if(foundRide.avlSts <= 0){
            return response.status(400).json({message: "seatain full hain dost, latak k aana parega"});
          }
-         foundRide.availableSeats = foundRide.availableSeats - 1; // wah wah kya logic hai
-         foundRide.passengers = foundRide.passengers + 1;
+         foundRide.avlSts = foundRide.avlSts - 1; // wah wah kya logic hai im so frickin smart
+         foundRide.passngrs = foundRide.passngrs + 1;
            await foundRide.save();
 
        // booking db me daalo 
          let newBooking = new bookingModel({userId: request.userData.id, rideId: foundRide._id});
         await newBooking.save();
 
-        response.json({message: "mubarak ho seat book ho gayi. waqt pe campus pohnch jana"});
-   } catch(error){ response.status(500).json({message: "server dead"}); }
+        response.json(foundRide);
+   } catch(error){ console.log(error); response.status(500).json({message: "server dead"}); }
 }
 
 const getMyBookings = async (request, response) => {

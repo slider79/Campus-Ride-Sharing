@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { doLog } from '../slices/userSlice';
+import { loginUser } from '../slices/userSlice';
 
 // idhar login ki game chal rhi hai, deets pakki honi chahiyen
 export default function Login() 
@@ -11,20 +11,22 @@ export default function Login()
   const dsp = useDispatch();
   const nav = useNavigate();
     const cUsr = useSelector(s => s.usr.currUsr);
-  const uList = useSelector(s => s.usr.usrList); // user list mangwa li check karny k liye
+  const error = useSelector(s => s.usr.error);
 
-  const subLog = (e) => 
+  const subLog = async (e) => 
     {
     e.preventDefault();
 
     if(!/\S+@\S+\.\S+/.test(eml)) return alert("Bhai proper email to likho ajeeb");
       if(pwd.length < 5) return alert("Password too chota, min 5 chars allowed.");
-    
-    // check karo user exist karta bhi hai ya nai
-    const chkUsr = uList.find(u => u.eml === eml && u.pwd === pwd);
-    if(!chkUsr) return alert("Galat email ya password gang ya to register karo ya deets proper dalo");
-    
-      dsp(doLog({eml, pwd}));
+
+      const payload = { email: eml, password: pwd };
+      const resultAction = await dsp(loginUser(payload));
+      if (loginUser.fulfilled.match(resultAction)) {
+        nav('/dashboard');
+      } else {
+        alert(resultAction.payload || error || 'Login failed.');
+      }
   }
 
   React.useEffect(() => 

@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.66bad83e.css",
+    "main.js": "/static/js/main.0b36ca50.js",
+    "static/media/fast_nuces_noir_20260405_221517.png": "/static/media/fast_nuces_noir_20260405_221517.3001d4a50312210a6fb5.png",
+    "index.html": "/index.html",
+    "main.66bad83e.css.map": "/static/css/main.66bad83e.css.map",
+    "main.0b36ca50.js.map": "/static/js/main.0b36ca50.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.66bad83e.css",
+    "static/js/main.0b36ca50.js"
+  ]
+}

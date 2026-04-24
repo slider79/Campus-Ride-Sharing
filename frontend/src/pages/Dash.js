@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { endRide } from '../slices/rideSlice';
 
 // dashboard ka nizam, kon kahan ja rha hai sab yahan hai
 export default function Dash() 
@@ -15,8 +14,7 @@ export default function Dash()
       const myReqs = reqList.filter(r => r.nm === cUsr?.nm);
 
     const hndlEnd = (id) => {
-        // ride end maro taakay board se hat jaye
-        dsp(endRide(id));
+        // ride end maro taakay board se hat jaye (frontend only for now)
         alert("Ride marked as completed!");
     }
 

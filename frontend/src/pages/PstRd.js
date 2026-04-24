@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { addRd } from '../slices/rideSlice';
+import { postRide } from '../slices/rideSlice';
 import { GoogleMap, useJsApiLoader, Marker, Polyline } from '@react-google-maps/api';
 
 const fastLoc = { lat: 31.4812, lng: 74.3032 };
@@ -20,6 +20,7 @@ export default function PstRd()
   
   const dsp = useDispatch();
     const cUsr = useSelector(s => s.usr.currUsr);
+  const token = useSelector(s => s.usr.token);
   const nav = useNavigate();
 
   const { isLoaded } = useJsApiLoader({ id: 'gmap-script', googleMapsApiKey: "" }); // dev mode map
@@ -48,7 +49,13 @@ export default function PstRd()
   const hndlPst = (e) => 
   {
     e.preventDefault();
-      const seatsNum = parseInt(avlSts);
+      if (!cUsr || !token) {
+      alert('You must be logged in to publish a ride.');
+      nav('/login');
+      return;
+    }
+
+    const seatsNum = parseInt(avlSts);
     if(seatsNum < 1 || seatsNum > 7) return alert("Seats must be between 1 and 7");
       if(!/^03\d{9}$/.test(cnt)) return alert("Invalid phone number format");
     if(addy.includes('Drag pin')) return alert("Please set a location on the map");
@@ -59,9 +66,23 @@ export default function PstRd()
     
     // Combine the three fields into one clean display string
     const veh = cUsr.vehDeets ? `${cUsr.vehDeets} (${cUsr.color}) - ${cUsr.plate}` : "Captain's Car";
+    const rideData = {
+      dNm: cUsr.userName || cUsr.nm,
+      pick,
+      dest,
+      dTime,
+      veh,
+      cnt,
+      nts: "Location set via Google Maps",
+      avlSts: seatsNum,
+      passngrs: 0,
+      actv: true
+    };
 
-      dsp(addRd({ dNm: cUsr.nm, pick, dest, dTime, avlSts: seatsNum, veh, cnt, nts: "Location set via Google Maps" }));
-    nav('/rides');
+      dsp(postRide({ rideData, token }))
+        .unwrap()
+        .then(() => nav('/rides'))
+        .catch((err) => alert(err || 'Unable to publish ride.'));
   }
 
   return (

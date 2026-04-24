@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { regUsr } from '../slices/userSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { registerUser } from '../slices/userSlice';
 import { degrees } from '../constants';
 
 // naya larka in horha hai system me, reg form
@@ -14,22 +14,33 @@ export default function Register()
   const [deg, setDeg] = React.useState(degrees[0]);
     const dsp = useDispatch();
   const nav = useNavigate();
+  const status = useSelector((state) => state.usr.status);
+  const error = useSelector((state) => state.usr.error);
 
-  const subReg = (e) =>
+  const subReg = async (e) =>
     {
       e.preventDefault();
       
-      // full strict checking with uni details b asically checks hi hain
       if(!/^[a-zA-Z\s]+$/.test(nm)) return alert("Naam mein numbers kaun dalta hai?");
         if(!/\S+@\S+\.\S+/.test(eml)) return alert("Invalid email format ustaad.");
       if(pwd.length < 5) return alert("Password thora lamba rakho (5+ chars).");
-      
-      // strict roll number check XXL-XXXX
-        if(!/^\d{2}[lL]-\d{4}$/.test(roll)) return alert("Roll number ka format XXL-XXXX hona chahye");
+      if(!/^\d{2}[lL]-\d{4}$/.test(roll)) return alert("Roll number ka format XXL-XXXX hona chahye");
 
-      dsp(regUsr({nm, eml, pwd, roll: roll.toUpperCase(), deg}));
+      const payload = {
+        userName: nm,
+        email: eml,
+        password: pwd,
+        roll: roll.toUpperCase(),
+        degree: deg
+      };
+
+      const resultAction = await dsp(registerUser(payload));
+      if (registerUser.fulfilled.match(resultAction)) {
         alert("Account registered! Now please Login.");
-      nav('/login');
+        nav('/login');
+      } else {
+        alert(resultAction.payload || error || 'Registration failed.');
+      }
   }
 
   return(

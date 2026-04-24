@@ -1,15 +1,21 @@
 import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchRides } from '../slices/rideSlice';
 
 // sari gariyan idhar khari hain, filter shilter maar lo
 export default function AllRds() 
 {
+  const dsp = useDispatch();
   const rList = useSelector(s => s.rd.rdList);
     const reqList = useSelector(s => s.rd.reqRds);
   const [sPrm, setSPrm] = useSearchParams();
   const qry = sPrm.get('search') || '';
     const [tab, setTab] = React.useState('offers'); // offers vs requests tab
+
+  React.useEffect(() => {
+    dsp(fetchRides());
+  }, [dsp]);
 
   const srchEvt = (e) => setSPrm({search: e.target.value});
 
