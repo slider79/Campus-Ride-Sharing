@@ -38,7 +38,7 @@ ON YOUR WAY is a specialized web application built using the MERN stack to facil
 
 1. Clone the repository:
 ```bash
-git clone [https://github.com/YOUR_USERNAME/campus-rides.git](https://github.com/YOUR_USERNAME/campus-rides.git)
+git clone [https://github.com/slider79/campus-rides.git](https://github.com/slider79/campus-rides.git)
 cd campus-rides
 ````
 

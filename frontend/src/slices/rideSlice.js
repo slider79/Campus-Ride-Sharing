@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchRidesApi, fetchRideDetailsApi, postRideApi, bookSeatApi, fetchMyBookingsApi } from '../services/api';
+import { fetchRidesApi, fetchRideDetailsApi, postRideApi, bookSeatApi, fetchMyBookingsApi, getMyRidesApi, postRideRequestApi, fetchAllRequestsApi } from '../services/api';
 
 export const fetchRides = createAsyncThunk(
   'rd/fetchRides',
@@ -56,11 +56,45 @@ export const fetchMyBookings = createAsyncThunk(
   }
 );
 
+export const getMyRides = createAsyncThunk(
+  'rd/getMyRides',
+  async (token, { rejectWithValue }) => {
+    try {
+      return await getMyRidesApi(token);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const postRideRequest = createAsyncThunk(
+  'rd/postRideRequest',
+  async ({ payload, token }, { rejectWithValue }) => {
+    try {
+      return await postRideRequestApi(payload, token);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchAllRequests = createAsyncThunk(
+  'rd/fetchAllRequests',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await fetchAllRequestsApi();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const rideSlice = createSlice({
   name: 'rd',
   initialState: {
     rdList: [],
     myBks: [],
+    myRides: [],
     reqRds: [],
     chats: [],
     selectedRide: null,
@@ -73,9 +107,6 @@ const rideSlice = createSlice({
     },
     sndMsg: (state, action) => {
       state.chats.push(action.payload);
-    },
-    reqRd: (state, action) => {
-      state.reqRds.push(action.payload);
     }
   },
   extraReducers: (builder) => {
@@ -98,6 +129,15 @@ const rideSlice = createSlice({
       .addCase(postRide.fulfilled, (state, action) => {
         state.rdList.push(action.payload);
       })
+      .addCase(getMyRides.fulfilled, (state, action) => {
+        state.myRides = action.payload;
+      })
+      .addCase(postRideRequest.fulfilled, (state, action) => {
+        state.reqRds.push(action.payload);
+      })
+      .addCase(fetchAllRequests.fulfilled, (state, action) => {
+        state.reqRds = action.payload;
+      })
       .addCase(bookSeat.fulfilled, (state, action) => {
         const updated = action.payload;
         const ride = state.rdList.find((item) => item.rId === updated.rId);
@@ -111,5 +151,5 @@ const rideSlice = createSlice({
   }
 });
 
-export const { clearSelectedRide, sndMsg, reqRd } = rideSlice.actions;
+export const { clearSelectedRide, sndMsg } = rideSlice.actions;
 export default rideSlice.reducer;

@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api';
 
 const handleResponse = async (response) => {
   const data = await response.json().catch(() => ({}));
@@ -79,5 +79,43 @@ export const approveCaptainApi = async (userId, token) => {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` }
   });
+  return handleResponse(response);
+};
+
+export const applyCaptainApi = async (payload, token) => {
+  const response = await fetch(`${API_BASE}/users/apply`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+  return handleResponse(response);
+};
+
+export const getMyRidesApi = async (token) => {
+  const response = await fetch(`${API_BASE}/rides/myRides/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  return handleResponse(response);
+};
+
+export const postRideRequestApi = async (payload, token) => {
+  const response = await fetch(`${API_BASE}/rides/request`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+  return handleResponse(response);
+};
+
+export const fetchAllRequestsApi = async () => {
+  const response = await fetch(`${API_BASE}/rides/requests/all`);
   return handleResponse(response);
 };

@@ -2,6 +2,17 @@ const rideModel = require('../models/rideModel');
 const bookingModel = require('../models/bookingModel');
 const requestModel = require('../models/requestModel');
 
+const getMyRides = async (request, response) => {
+  try {
+    const captainId = request.userData.id;
+    const myRides = await rideModel.find({ captainId }).populate('captainId', '-password');
+    response.json(myRides);
+  } catch(error) {
+    console.log(error);
+    response.status(500).json({message: 'Cannot fetch your rides'});
+  }
+}
+
 const getAvailableRides = async (request, response) => {
   try{
       let allRides = await rideModel.find();
@@ -93,4 +104,4 @@ const getRequests = async (request, response) => {
     } catch (e) { response.status(500).json({message: "get requests urr gaya"}); }
 }
 
-module.exports = {getAvailableRides, postNewRide, getRideDetails, bookSeat, getMyBookings, postRequest, getRequests};
+module.exports = {getAvailableRides, postNewRide, getRideDetails, bookSeat, getMyBookings, postRequest, getRequests, getMyRides};

@@ -1,39 +1,84 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
- const app = express();
- const userModel = require('./models/userModel');
+require('dotenv').config();
 
-  app.use(cors()); 
-   app.use(express.json());
+const app = express();
+const userModel = require('./models/userModel');
 
-// db connect karna zaroori hai warna frontend walo (also me) ki mehnat zaya
+async function seedAdminUser({ userName, email, password }) {
+  const existingUser = await userModel.findOne({ email });
+  if (existingUser) {
+    return false;
+  }
 
-mongoose.connect('mongodb://127.0.0.1:27017/campusRideDb')
+  const bcrypt = require('bcryptjs');
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await userModel.create({
+    userName,
+    email,
+    password: hashedPassword,
+    role: 'admin'
+  });
+
+  return true;
+}
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+app.use(express.json());
+
+// MongoDB Connection
+const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/campusRideDb';
+mongoose.connect(mongoUri)
 .then(async () => {
-    console.log("db chal gaya shukar hai bhai");
-    
-    // Admin Boss ko zinda karo
-    const adminExists = await userModel.findOne({email: 'admin@nu.edu.pk'});
-    if(!adminExists) {
-        await userModel.create({
-            userName: 'Admin Boss', 
-            email: 'admin@nu.edu.pk', 
-            password: 'admin', 
-            role: 'admin'
-        });
-        console.log("Admin Boss ki entry ho gayi hai db me");
+    console.log("✓ MongoDB connection successful");
+
+    const defaultAdmin = {
+      userName: process.env.DEFAULT_ADMIN_NAME || 'Admin Boss',
+      email: process.env.DEFAULT_ADMIN_EMAIL || 'admin@nu.edu.pk',
+      password: process.env.DEFAULT_ADMIN_PASSWORD || 'admin'
+    };
+
+    const demoAdmin = {
+      userName: process.env.DEMO_ADMIN_NAME || 'Demo Admin',
+      email: process.env.DEMO_ADMIN_EMAIL || 'demo.admin@nu.edu.pk',
+      password: process.env.DEMO_ADMIN_PASSWORD || 'demoadmin'
+    };
+
+    const defaultCreated = await seedAdminUser(defaultAdmin);
+    if (defaultCreated) {
+      console.log(`✓ Default admin user created (email: ${defaultAdmin.email})`);
+    }
+
+    const demoCreated = await seedAdminUser(demoAdmin);
+    if (demoCreated) {
+      console.log(`✓ Demo admin user created (email: ${demoAdmin.email})`);
     }
 })
-.catch((error)=>console.log("db ka phadda", error));
+.catch((error)=>{
+    console.log("✗ MongoDB connection failed:", error.message);
+    process.exit(1);
+});
 
-// alag routes
+// API Routes
 const userRoutes = require('./routes/userRoutes');
- const rideRoutes = require('./routes/rideRoutes');
+const rideRoutes = require('./routes/rideRoutes');
 
 app.use('/api/users', userRoutes);
-  app.use('/api/rides', rideRoutes);
+app.use('/api/rides', rideRoutes);
 
-app.listen(3001, () => {
- console.log("server ud raha hai port 3001 pe, Alhumdulillah");
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+ console.log(`✓ Server running on port ${PORT}`);
 });

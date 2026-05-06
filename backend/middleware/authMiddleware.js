@@ -1,13 +1,13 @@
 const jwtToken = require('jsonwebtoken');
+require('dotenv').config();
 
-// secret key environment file me nahi, idhar hi likh do asani ke lye
-const secretKey = "gpaNhiAata";
+const secretKey = process.env.JWT_SECRET || 'babaKiRani';
 
  const checkAuth = (request, response, nextFunction) => {
    // header se uthao token
   let authToken = request.headers.authorization;
     if(!authToken) {
-       return response.status(401).json({message: "bhai login to karlo pehle, wese hi route me ghus rahay ho"});
+       return response.status(401).json({message: "Authentication required. Missing Authorization header."});
   }
    authToken = authToken.split(" ")[1]; // 'Bearer' lafaz hatao
 
@@ -16,7 +16,7 @@ const secretKey = "gpaNhiAata";
      request.userData = decodedPayload; // request me payload latka do agay controllers me kaam ayega
     nextFunction();
    } catch(error) {
-    return response.status(401).json({message: "token expire ho gaya ya fake hai, bhai hacker mat bano yahan pe"});
+    return response.status(401).json({message: "Invalid or expired token."});
    }
 };
 

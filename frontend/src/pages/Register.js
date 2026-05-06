@@ -14,7 +14,6 @@ export default function Register()
   const [deg, setDeg] = React.useState(degrees[0]);
     const dsp = useDispatch();
   const nav = useNavigate();
-  const status = useSelector((state) => state.usr.status);
   const error = useSelector((state) => state.usr.error);
 
   const subReg = async (e) =>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { reqRd } from '../slices/rideSlice';
+import { postRideRequest } from '../slices/rideSlice';
 import { GoogleMap, useJsApiLoader, Marker, Polyline } from '@react-google-maps/api';
 
 const fastLoc = { lat: 31.4812, lng: 74.3032 };
@@ -12,6 +12,7 @@ export default function RqRd()
 {
     const dsp = useDispatch();
       const cUsr = useSelector(s => s.usr.currUsr);
+    const token = useSelector(s => s.usr.token);
     const nav = useNavigate();
 
     const [pinLoc, setPinLoc] = React.useState({ lat: 31.5204, lng: 74.3587 }); 
@@ -46,11 +47,14 @@ export default function RqRd()
         if(addy.includes('Drag pin')) return alert("Bhai location to map se select karo");
         
         const pick = toFast ? addy : "FAST NUCES";
-          const dest = toFast ? "FAST NUCES" : addy;
         
-        dsp(reqRd({nm: cUsr.nm, pick, dest}));
-          alert("Ride request posted via Map!");
-        nav('/rides');
+        dsp(postRideRequest({ payload: { location: pick }, token }))
+          .unwrap()
+          .then(() => {
+            alert("Ride request posted successfully!");
+            nav('/rides');
+          })
+          .catch(err => alert(err || 'Failed to post request'));
     }
 
     return (

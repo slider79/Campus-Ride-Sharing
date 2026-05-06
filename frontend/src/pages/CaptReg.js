@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { reqCapt } from '../slices/userSlice';
+import { applyCaptain } from '../slices/userSlice';
 
 // A dedicated portal for drivers to upload vehicle details and images
 export default function CaptReg() {
@@ -12,6 +12,7 @@ export default function CaptReg() {
     
     const dsp = useDispatch();
     const cUsr = useSelector(s => s.usr.currUsr);
+    const token = useSelector(s => s.usr.token);
 
     // Helper function to convert uploaded images to Base64 strings for Redux
     const handleFileUpload = (e, setFileState) => {
@@ -25,15 +26,19 @@ export default function CaptReg() {
         }
     }
 
-    const subCapt = (e) => {
+    const subCapt = async (e) => {
         e.preventDefault();
         
         if(!idPic || !licPic) {
             return alert("Please upload both your Student ID and Driver's License.");
         }
         
-        dsp(reqCapt({veh, plate, color, idPic, licPic}));
-        alert("Application and documents sent to Admin! Please wait for approval.");
+        try {
+            await dsp(applyCaptain({ payload: { veh, plate, color, idPic, licPic }, token })).unwrap();
+            alert("Application and documents sent to Admin! Please wait for approval.");
+        } catch (error) {
+            alert(`Unable to submit application: ${error}`);
+        }
     }
 
     if(cUsr?.isCapt) return <div className="mainCont">You are already an approved Captain.</div>;

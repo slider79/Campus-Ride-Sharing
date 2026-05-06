@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchRides } from '../slices/rideSlice';
+import { fetchRides, fetchAllRequests } from '../slices/rideSlice';
 
 // sari gariyan idhar khari hain, filter shilter maar lo
 export default function AllRds() 
@@ -15,13 +15,14 @@ export default function AllRds()
 
   React.useEffect(() => {
     dsp(fetchRides());
+    dsp(fetchAllRequests());
   }, [dsp]);
 
   const srchEvt = (e) => setSPrm({search: e.target.value});
 
     // sirf active rides filter karo
     const fList = rList.filter(r => r.actv === true && (r.dest.toLowerCase().includes(qry.toLowerCase()) || r.pick.toLowerCase().includes(qry.toLowerCase())));
-  const fReqList = reqList.filter(r => r.dest.toLowerCase().includes(qry.toLowerCase()) || r.pick.toLowerCase().includes(qry.toLowerCase()));
+  const fReqList = reqList.filter(r => r.location.toLowerCase().includes(qry.toLowerCase()));
 
   return (
     <div className="mainCont">
@@ -51,8 +52,8 @@ export default function AllRds()
       {tab === 'reqs' && fReqList.map((req, i) => 
       (
           <div key={i} className="boxCrd">
-              <div style={{fontWeight: 'bold', marginBottom: '8px'}}>Needs ride: {req.pick} to {req.dest}</div>
-                <div className="smText">Requested by: <Link to={`/profile/${req.nm}`}>{req.nm}</Link></div>
+              <div style={{fontWeight: 'bold', marginBottom: '8px'}}>Needs ride to: {req.location || 'FAST NUCES'}</div>
+                <div className="smText">Requested: {new Date(req.createdAt).toLocaleDateString()}</div>
           </div>
       ))}
     </div>

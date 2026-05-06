@@ -32,7 +32,7 @@ export default function LiveMap({ rId }) {
 
     const sndChat = (e) => {
         e.preventDefault();
-        dsp(sndMsg({rId, sndr: cUsr.nm, txt: msg}));
+        dsp(sndMsg({rId, sndr: cUsr.userName, txt: msg}));
         setMsg('');
     }
 

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { registerUserApi, loginUserApi, fetchAllUsersApi, approveCaptainApi } from '../services/api';
+import { registerUserApi, loginUserApi, fetchAllUsersApi, approveCaptainApi, applyCaptainApi } from '../services/api';
 
 
 const savedToken = localStorage.getItem('token');
@@ -42,6 +42,14 @@ export const approveCaptain = createAsyncThunk(
   'usr/approveCaptain',
   async ({ userId, token }, { rejectWithValue }) => {
     try { return await approveCaptainApi(userId, token); } 
+    catch (error) { return rejectWithValue(error.message); }
+  }
+);
+
+export const applyCaptain = createAsyncThunk(
+  'usr/applyCaptain',
+  async ({ payload, token }, { rejectWithValue }) => {
+    try { return await applyCaptainApi(payload, token); }
     catch (error) { return rejectWithValue(error.message); }
   }
 );
@@ -128,6 +136,10 @@ const userSlice = createSlice({
       .addCase(fetchAllUsers.fulfilled, (state, action) => {
         state.usrList = action.payload; 
       })
+      .addCase(applyCaptain.fulfilled, (state, action) => {
+        state.currUsr = action.payload;
+        localStorage.setItem('user', JSON.stringify(action.payload));
+      })
       .addCase(approveCaptain.fulfilled, (state, action) => {
         const updatedUser = action.payload;
         const index = state.usrList.findIndex(u => u._id === updatedUser._id);
@@ -138,5 +150,5 @@ const userSlice = createSlice({
   }
 });
 
-export const { doOut, chgPwd, updtProf, reqCapt, aprCapt } = userSlice.actions;
+export const { doOut, chgPwd, updtProf, aprCapt } = userSlice.actions;
 export default userSlice.reducer;

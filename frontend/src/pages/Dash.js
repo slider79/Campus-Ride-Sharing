@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { fetchRides, fetchAllRequests } from '../slices/rideSlice';
 
 // dashboard ka nizam, kon kahan ja rha hai sab yahan hai
 export default function Dash() 
@@ -7,11 +8,16 @@ export default function Dash()
     const cUsr = useSelector(s => s.usr.currUsr);
       const rList = useSelector(s => s.rd.rdList);
     const reqList = useSelector(s => s.rd.reqRds);
-  const [tab, setTab] = React.useState('posted'); // dashboard tabs
     const dsp = useDispatch();
+  const [tab, setTab] = React.useState('posted'); // dashboard tabs
 
-    const myPosts = rList.filter(r => r.dNm === cUsr?.nm);
-      const myReqs = reqList.filter(r => r.nm === cUsr?.nm);
+  React.useEffect(() => {
+    dsp(fetchRides());
+    dsp(fetchAllRequests());
+  }, [dsp]);
+
+    const myPosts = rList.filter(r => r.dNm === cUsr?.userName);
+      const myReqs = reqList.filter(r => r.userName === cUsr?.userName);
 
     const hndlEnd = (id) => {
         // ride end maro taakay board se hat jaye (frontend only for now)
@@ -21,7 +27,7 @@ export default function Dash()
     return(
         <div className="mainCont">
             <div className="bigText">Dashboard</div>
-              <p className="smText">Welcome back, {cUsr?.nm} ({cUsr?.roll})</p>
+              <p className="smText">Welcome back, {cUsr?.userName} ({cUsr?.roll})</p>
             
             <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
                <button className={tab === 'posted' ? '' : 'btn-sec'} onClick={()=>setTab('posted')}>My Posted Rides</button>
@@ -57,7 +63,7 @@ export default function Dash()
                       {myReqs.map((r, i) => 
                     (
                         <div key={i} className="boxCrd">
-                            <strong>Looking for a ride: {r.pick} to {r.dest}</strong>
+                            <strong>Looking for a ride to: {r.location || 'FAST NUCES'}</strong>
                         </div>
                     ))}
                 </div>

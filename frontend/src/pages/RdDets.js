@@ -39,7 +39,7 @@ export default function RdDets()
       if(!cUsr) return alert("You need to be logged in to chat.");
       if(!msg.trim()) return; // Prevent empty messages
       
-      dsp(sndMsg({rId: id, sndr: cUsr.userName || cUsr.nm, txt: msg}));
+      dsp(sndMsg({rId: id, sndr: cUsr.userName, txt: msg}));
       setMsg('');
   }
 

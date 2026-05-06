@@ -16,6 +16,7 @@ export default function PstRd()
   // map states
   const [pinLoc, setPinLoc] = React.useState({ lat: 31.5204, lng: 74.3587 }); 
     const [addy, setAddy] = React.useState('Drag pin to set location');
+  const [manualLoc, setManualLoc] = React.useState('');
   const [toFast, setToFast] = React.useState(true); // autofill FAST toggle
   
   const dsp = useDispatch();
@@ -58,16 +59,18 @@ export default function PstRd()
     const seatsNum = parseInt(avlSts);
     if(seatsNum < 1 || seatsNum > 7) return alert("Seats must be between 1 and 7");
       if(!/^03\d{9}$/.test(cnt)) return alert("Invalid phone number format");
-    if(addy.includes('Drag pin')) return alert("Please set a location on the map");
+
+    const location = addy.includes('Drag pin') ? manualLoc.trim() : addy;
+    if(!location) return alert("Please set a location on the map or enter it manually.");
 
     // autofill logic
-    const pick = toFast ? addy : "FAST NUCES";
-      const dest = toFast ? "FAST NUCES" : addy;
+    const pick = toFast ? location : "FAST NUCES";
+      const dest = toFast ? "FAST NUCES" : location;
     
     // Combine the three fields into one clean display string
     const veh = cUsr.vehDeets ? `${cUsr.vehDeets} (${cUsr.color}) - ${cUsr.plate}` : "Captain's Car";
     const rideData = {
-      dNm: cUsr.userName || cUsr.nm,
+      dNm: cUsr.userName,
       pick,
       dest,
       dTime,
@@ -112,6 +115,9 @@ export default function PstRd()
         <input type="datetime-local" required value={dTime} onChange={e=>setDTime(e.target.value)} />
           <input type="number" placeholder="Available Seats (1-7)" required value={avlSts} onChange={e=>setAvlSts(e.target.value)} />
         <input placeholder="Contact Number (03xxxxxxxxx)" required value={cnt} onChange={e=>setCnt(e.target.value)} />
+        {(!isLoaded || addy.includes('Drag pin')) && (
+          <input placeholder="Manual pickup/dropoff location" value={manualLoc} onChange={e=>setManualLoc(e.target.value)} />
+        )}
           <button type="submit">Publish Route</button>
       </form>
     </div>

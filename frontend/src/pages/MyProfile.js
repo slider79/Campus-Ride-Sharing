@@ -14,12 +14,12 @@ export default function MyProfile()
     const nav = useNavigate();
 
     // Stats calculations
-    const ridesOffered = rList.filter(r => r.dNm === cUsr?.nm).length;
-    const ridesCompleted = rList.filter(r => r.dNm === cUsr?.nm && r.actv === false).length;
-    const ridesBooked = myBks.filter(b => b.uEml === cUsr?.eml).length;
+    const ridesOffered = rList.filter(r => r.dNm === cUsr?.userName).length;
+    const ridesCompleted = rList.filter(r => r.dNm === cUsr?.userName && r.actv === false).length;
+    const ridesBooked = myBks.filter(b => b.rideId && b.userId === cUsr?._id).length;
 
     // Form states
-    const [newName, setNewName] = React.useState(cUsr?.nm || '');
+    const [newName, setNewName] = React.useState(cUsr?.userName || '');
     const [nPwd, setNPwd] = React.useState('');
     const [cPwd, setCPwd] = React.useState(''); 
 
@@ -76,7 +76,7 @@ export default function MyProfile()
                     <div className="bigText" style={{ fontSize: '20px' }}>Account Details</div>
                     <form onSubmit={hndlProfUpdt}>
                         <div className="smText" style={{marginBottom: '5px'}}>Email (Unchangeable)</div>
-                        <input value={cUsr.eml} disabled style={{ background: '#eee', cursor: 'not-allowed' }} />
+                        <input value={cUsr.email} disabled style={{ background: '#eee', cursor: 'not-allowed' }} />
                         
                         <div className="smText" style={{marginBottom: '5px'}}>Roll Number</div>
                         <input value={cUsr.roll || 'N/A'} disabled style={{ background: '#eee', cursor: 'not-allowed' }} />
