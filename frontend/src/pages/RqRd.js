@@ -47,8 +47,9 @@ export default function RqRd()
         if(addy.includes('Drag pin')) return alert("Bhai location to map se select karo");
         
         const pick = toFast ? addy : "FAST NUCES";
-        
-        dsp(postRideRequest({ payload: { location: pick }, token }))
+        const dest = toFast ? "FAST NUCES" : addy;
+
+        dsp(postRideRequest({ payload: { location: pick, pick, dest, toFast }, token }))
           .unwrap()
           .then(() => {
             alert("Ride request posted successfully!");

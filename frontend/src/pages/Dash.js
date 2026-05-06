@@ -1,11 +1,12 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchRides, fetchAllRequests } from '../slices/rideSlice';
+import { fetchRides, fetchAllRequests, completeRide } from '../slices/rideSlice';
 
 // dashboard ka nizam, kon kahan ja rha hai sab yahan hai
 export default function Dash() 
 {
     const cUsr = useSelector(s => s.usr.currUsr);
+    const token = useSelector(s => s.usr.token);
       const rList = useSelector(s => s.rd.rdList);
     const reqList = useSelector(s => s.rd.reqRds);
     const dsp = useDispatch();
@@ -16,12 +17,22 @@ export default function Dash()
     dsp(fetchAllRequests());
   }, [dsp]);
 
-    const myPosts = rList.filter(r => r.dNm === cUsr?.userName);
-      const myReqs = reqList.filter(r => r.userName === cUsr?.userName);
+    const myPosts = rList.filter(r => {
+      const captainId = typeof r?.captainId === 'string' ? r.captainId : r?.captainId?._id;
+      return captainId === cUsr?._id || r?.dNm === cUsr?.userName;
+    });
+      const myReqs = reqList.filter(r => {
+        const requestUserId = typeof r?.userId === 'string' ? r.userId : r?.userId?._id;
+        return requestUserId === cUsr?._id;
+      });
 
-    const hndlEnd = (id) => {
-        // ride end maro taakay board se hat jaye (frontend only for now)
-        alert("Ride marked as completed!");
+      const hndlEnd = async (id) => {
+        try {
+          await dsp(completeRide({ rideId: id, token })).unwrap();
+          alert("Ride marked as completed!");
+        } catch (error) {
+          alert(error || 'Could not mark ride completed.');
+        }
     }
 
     return(
@@ -63,7 +74,8 @@ export default function Dash()
                       {myReqs.map((r, i) => 
                     (
                         <div key={i} className="boxCrd">
-                            <strong>Looking for a ride to: {r.location || 'FAST NUCES'}</strong>
+                          <strong>{(r.pick || r.location || 'Unknown')} to {(r.dest || 'FAST NUCES')}</strong>
+                          <div className="smText">Requested: {r.createdAt ? new Date(r.createdAt).toLocaleString() : 'Just now'}</div>
                         </div>
                     ))}
                 </div>

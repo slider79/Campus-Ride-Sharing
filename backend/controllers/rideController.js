@@ -1,6 +1,7 @@
 const rideModel = require('../models/rideModel');
 const bookingModel = require('../models/bookingModel');
 const requestModel = require('../models/requestModel');
+const { calculateFare, FAST_LOCATION } = require('../utils/fareCalculator');
 
 const getMyRides = async (request, response) => {
   try {
@@ -32,22 +33,47 @@ const getAvailableRides = async (request, response) => {
 
 const postNewRide = async (request, response) => {
    try{
+     const numSeats = parseInt(request.body.avlSts) || 1;
+     
+     // Calculate fare based on distance and number of seats
+     const distanceKm = request.body.distanceKm || 0;
+     const fareBreakdown = calculateFare(distanceKm, numSeats);
+     
      const newRide = new rideModel({
        captainId: request.userData.id,
        rId: Math.random().toString(36).substring(2, 10),
-         dNm: request.body.dNm,
+       dNm: request.body.dNm,
        pick: request.body.pick,
-         dest: request.body.dest,
-         dTime: request.body.dTime,
-         veh: request.body.veh,
-         cnt: request.body.cnt,
-         nts: request.body.nts,
-         avlSts: request.body.avlSts,
-         price: request.body.price
+       dest: request.body.dest,
+       dTime: request.body.dTime,
+       veh: request.body.veh,
+       cnt: request.body.cnt,
+       nts: request.body.nts,
+       avlSts: numSeats,
+       price: request.body.price || fareBreakdown.totalFare,
+       
+       // Fare calculation fields
+       distanceKm: distanceKm,
+       baseFare: fareBreakdown.baseFare,
+      ratePerKm: 25,
+       farePerSeat: fareBreakdown.farePerSeat,
+       totalFareAllSeats: fareBreakdown.totalFare,
+       
+       // Coordinates for distance recalculation
+       pickupLat: request.body.pickupLat,
+       pickupLng: request.body.pickupLng,
+       pickupAddress: request.body.pickupAddress,
+       goingToFast: request.body.goingToFast !== undefined ? request.body.goingToFast : true
      });
       await newRide.save();
-     response.json(newRide);
-   } catch(error) { console.log(error); response.status(500).json({message:"error bro"}); }
+     response.json({
+       ...newRide.toObject(),
+       fareBreakdown: fareBreakdown
+     });
+   } catch(error) { 
+     console.log(error); 
+     response.status(500).json({message:"error posting ride"}); 
+   }
 }
 
 const getRideDetails = async (request, response) => {
@@ -87,13 +113,39 @@ const getMyBookings = async (request, response) => {
 
 const postRequest = async (request, response) => {
     try {
+        const pick = request.body.pick || request.body.location || '';
+        const dest = request.body.dest || 'FAST NUCES';
         const newReq = new requestModel({
             userId: request.userData.id,
-            location: request.body.location
+            location: request.body.location || pick,
+            pick,
+            dest,
+            toFast: request.body.toFast !== undefined ? request.body.toFast : true
         });
         await newReq.save();
-        response.json({message: "Pin drop hogya hai, koi farishta aake pick karlega"});
+        const savedReq = await requestModel.findById(newReq._id).populate('userId', 'userName');
+        response.status(201).json(savedReq);
     } catch (e) { response.status(500).json({message: "request urr gayi"}); }
+}
+
+const completeRide = async (request, response) => {
+  try {
+    const foundRide = await rideModel.findOne({ rId: request.params.id });
+    if(!foundRide) return response.status(404).json({message: "Ride not found"});
+
+    if(String(foundRide.captainId) !== String(request.userData.id) && request.userData.role !== 'admin') {
+      return response.status(403).json({message: "Only ride captain or admin can mark ride completed."});
+    }
+
+    foundRide.actv = false;
+    foundRide.completedAt = new Date();
+    await foundRide.save();
+
+    response.json(foundRide);
+  } catch(error) {
+    console.log(error);
+    response.status(500).json({message: "Could not mark ride as completed"});
+  }
 }
 
 
@@ -104,4 +156,4 @@ const getRequests = async (request, response) => {
     } catch (e) { response.status(500).json({message: "get requests urr gaya"}); }
 }
 
-module.exports = {getAvailableRides, postNewRide, getRideDetails, bookSeat, getMyBookings, postRequest, getRequests, getMyRides};
+module.exports = {getAvailableRides, postNewRide, getRideDetails, bookSeat, getMyBookings, postRequest, getRequests, getMyRides, completeRide};

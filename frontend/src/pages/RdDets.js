@@ -43,18 +43,17 @@ export default function RdDets()
       setMsg('');
   }
 
-  if(!rObj) return <div className="mainCont">Ride not found...</div>;
-
-  // Dynamic Fare Calculation Engine (From Proposal)
-  // Assuming a demo distance of 10km for front-end purposes
-  const distKm = 10; 
-  const baseFare = 50;
-  let totFare = baseFare + (distKm * 25);
+  // Calculate actual fare based on ride data
+  const distKm = rObj.distanceKm || 10; // Default to 10km if not available
+  const baseFare = rObj.baseFare || 50;
+  const distanceCharge = Math.round(distKm * (rObj.ratePerKm || 25) * 100) / 100;
+  const farePerSeat = rObj.farePerSeat || (baseFare + distanceCharge);
   
-  // Split fare logic: divides total by number of active passengers (minimum 1)
+  // Split fare logic: divides total by number of active passengers
+  let perPassengerFare = farePerSeat;
   const activePass = rObj.passngrs || 1;
   if (rObj.passngrs > 0) {
-      totFare = totFare / activePass;
+    perPassengerFare = Math.round((rObj.totalFareAllSeats / activePass) * 100) / 100;
   }
 
   return (
@@ -69,12 +68,18 @@ export default function RdDets()
       <p><strong>Contact:</strong> {rObj.cnt}</p>
       <p className="smText">Notes: {rObj.nts}</p>
       
-      {/* Dynamic Fare UI */}
-      <div style={{background: '#f5f5f5', padding: '12px', borderRadius: '4px', margin: '15px 0', borderLeft: '4px solid #111'}}>
-          <strong>Estimated Fare: </strong> {totFare.toFixed(2)} PKR per head
-          <div className="smText" style={{marginTop: '4px'}}>
-              (Based on {distKm}km demo distance and {activePass} active passengers)
-          </div>
+      {/* Detailed Fare Breakdown */}
+      <div style={{background: '#e8f5e9', padding: '15px', borderRadius: '6px', margin: '15px 0', border: '2px solid #4caf50'}}>
+        <div className="bigText" style={{fontSize: '18px', marginBottom: '10px'}}>💰 Fare Breakdown</div>
+        <div className="smText">
+          <p><strong>Distance:</strong> {distKm} km</p>
+          <p><strong>Base Fare:</strong> PKR {baseFare} per passenger</p>
+          <p><strong>Distance Charge:</strong> PKR {distanceCharge} per passenger (PKR {Math.round(((rObj.ratePerKm || 25)) * 100) / 100}/km × {distKm}km)</p>
+          <hr style={{border: '0.5px solid #999', margin: '8px 0'}} />
+          <p><strong>Per Seat Price:</strong> PKR {farePerSeat}</p>
+          <p><strong>Total for Available Seats:</strong> PKR {rObj.totalFareAllSeats || (farePerSeat * (rObj.avlSts || 1))} ({rObj.avlSts} seats)</p>
+          {activePass > 0 && <p><strong style={{color: '#2e7d32'}}>Per Passenger Cost:</strong> PKR {perPassengerFare} ({activePass} passengers)</p>}
+        </div>
       </div>
       
       <button onClick={bkSeatBtn} disabled={rObj.avlSts === 0} style={{marginBottom: '30px'}}>
@@ -88,17 +93,17 @@ export default function RdDets()
       <p className="smText">Coordinate exact pickup spots or notify about delays here.</p>
       
       <div style={{height: '200px', overflowY: 'auto', border: '1px solid #ddd', padding: '10px', marginBottom: '15px', borderRadius: '4px', background: '#fafafa'}}>
-          {chats.length === 0 ? <p className="smText" style={{textAlign: 'center', marginTop: '80px'}}>No messages yet. Say hi!</p> : null}
-          {chats.map((c, i) => (
-              <div key={i} style={{marginBottom: '8px', padding: '8px', background: c.sndr === cUsr?.nm ? '#e3f2fd' : '#fff', borderRadius: '4px', border: '1px solid #eee'}}>
-                  <strong>{c.sndr}:</strong> {c.txt}
-              </div>
-          ))}
+        {chats.length === 0 ? <p className="smText" style={{textAlign: 'center', marginTop: '80px'}}>No messages yet. Say hi!</p> : null}
+        {chats.map((c, i) => (
+          <div key={i} style={{marginBottom: '8px', padding: '8px', background: c.sndr === cUsr?.nm ? '#e3f2fd' : '#fff', borderRadius: '4px', border: '1px solid #eee'}}>
+            <strong>{c.sndr}:</strong> {c.txt}
+          </div>
+        ))}
       </div>
 
       <form style={{display: 'flex', gap: '10px'}} onSubmit={sndChat}>
-          <input style={{marginBottom: 0}} placeholder="Type a message..." value={msg} onChange={e=>setMsg(e.target.value)} />
-          <button type="submit">Send</button>
+        <input style={{marginBottom: 0}} placeholder="Type a message..." value={msg} onChange={e=>setMsg(e.target.value)} />
+        <button type="submit">Send</button>
       </form>
     </div>
   )

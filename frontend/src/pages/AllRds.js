@@ -21,8 +21,17 @@ export default function AllRds()
   const srchEvt = (e) => setSPrm({search: e.target.value});
 
     // sirf active rides filter karo
-    const fList = rList.filter(r => r.actv === true && (r.dest.toLowerCase().includes(qry.toLowerCase()) || r.pick.toLowerCase().includes(qry.toLowerCase())));
-  const fReqList = reqList.filter(r => r.location.toLowerCase().includes(qry.toLowerCase()));
+    const fList = rList.filter(r => {
+      const dest = (r?.dest || '').toLowerCase();
+      const pick = (r?.pick || '').toLowerCase();
+      const q = qry.toLowerCase();
+      return r?.actv === true && (dest.includes(q) || pick.includes(q));
+    });
+
+  const fReqList = reqList.filter(r => {
+    const loc = (r?.location || '').toLowerCase();
+    return loc.includes(qry.toLowerCase());
+  });
 
   return (
     <div className="mainCont">
@@ -49,11 +58,11 @@ export default function AllRds()
         </div>
       ))}
 
-      {tab === 'reqs' && fReqList.map((req, i) => 
+        {tab === 'reqs' && fReqList.map((req, i) => 
       (
           <div key={i} className="boxCrd">
-              <div style={{fontWeight: 'bold', marginBottom: '8px'}}>Needs ride to: {req.location || 'FAST NUCES'}</div>
-                <div className="smText">Requested: {new Date(req.createdAt).toLocaleDateString()}</div>
+              <div style={{fontWeight: 'bold', marginBottom: '8px'}}>{(req.pick || req.location || 'Unknown')} to {(req.dest || 'FAST NUCES')}</div>
+            <div className="smText">Requested: {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'Just now'}</div>
           </div>
       ))}
     </div>

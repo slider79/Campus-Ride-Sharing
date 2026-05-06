@@ -2,21 +2,36 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { chgPwd, doOut, updtProf } from '../slices/userSlice';
+import { fetchRides, fetchMyBookings } from '../slices/rideSlice';
 
 // User's personal hub for stats, settings, and passwords
 export default function MyProfile() 
 {
     const cUsr = useSelector(s => s.usr.currUsr);
+    const token = useSelector(s => s.usr.token);
     const rList = useSelector(s => s.rd.rdList);
     const myBks = useSelector(s => s.rd.myBks);
     
     const dsp = useDispatch();
     const nav = useNavigate();
 
+    React.useEffect(() => {
+        if (token) {
+            dsp(fetchRides());
+            dsp(fetchMyBookings(token));
+        }
+    }, [dsp, token]);
+
     // Stats calculations
-    const ridesOffered = rList.filter(r => r.dNm === cUsr?.userName).length;
-    const ridesCompleted = rList.filter(r => r.dNm === cUsr?.userName && r.actv === false).length;
-    const ridesBooked = myBks.filter(b => b.rideId && b.userId === cUsr?._id).length;
+    const ridesOffered = rList.filter(r => {
+        const captainId = typeof r?.captainId === 'string' ? r.captainId : r?.captainId?._id;
+        return captainId === cUsr?._id || r?.dNm === cUsr?.userName;
+    }).length;
+    const ridesCompleted = rList.filter(r => {
+        const captainId = typeof r?.captainId === 'string' ? r.captainId : r?.captainId?._id;
+        return (captainId === cUsr?._id || r?.dNm === cUsr?.userName) && r?.actv === false;
+    }).length;
+    const ridesBooked = myBks.filter(b => b.rideId).length;
 
     // Form states
     const [newName, setNewName] = React.useState(cUsr?.userName || '');

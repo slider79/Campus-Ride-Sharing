@@ -54,7 +54,7 @@ export default function App()
                           <ul style={{lineHeight: '1.8', color: '#555', paddingLeft: '20px'}}>
                             <li>Save on daily commute expenses with dynamic fare splits</li>
                               <li>Travel securely with verified campus students and Captains</li>
-                            <li>Live tracking and proximity matching</li>
+                            <li>Petrol mehnga hogya hai, chup chaap register karo</li>
                         </ul>
                           <Link to="/rides"><button style={{marginTop: '20px'}}>Explore Rides Now</button></Link>
                     </div>

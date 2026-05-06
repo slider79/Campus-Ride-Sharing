@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchRidesApi, fetchRideDetailsApi, postRideApi, bookSeatApi, fetchMyBookingsApi, getMyRidesApi, postRideRequestApi, fetchAllRequestsApi } from '../services/api';
+import { fetchRidesApi, fetchRideDetailsApi, postRideApi, bookSeatApi, fetchMyBookingsApi, getMyRidesApi, postRideRequestApi, fetchAllRequestsApi, completeRideApi } from '../services/api';
 
 export const fetchRides = createAsyncThunk(
   'rd/fetchRides',
@@ -39,6 +39,17 @@ export const bookSeat = createAsyncThunk(
   async ({ rideId, token }, { rejectWithValue }) => {
     try {
       return await bookSeatApi(rideId, token);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const completeRide = createAsyncThunk(
+  'rd/completeRide',
+  async ({ rideId, token }, { rejectWithValue }) => {
+    try {
+      return await completeRideApi(rideId, token);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -143,6 +154,17 @@ const rideSlice = createSlice({
         const ride = state.rdList.find((item) => item.rId === updated.rId);
         if (ride) {
           Object.assign(ride, updated);
+        }
+      })
+      .addCase(completeRide.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const ride = state.rdList.find((item) => item.rId === updated.rId);
+        if (ride) {
+          Object.assign(ride, updated);
+        }
+        const myRide = state.myRides.find((item) => item.rId === updated.rId);
+        if (myRide) {
+          Object.assign(myRide, updated);
         }
       })
       .addCase(fetchMyBookings.fulfilled, (state, action) => {

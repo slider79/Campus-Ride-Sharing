@@ -62,6 +62,25 @@ export default function AdminDash() {
             <hr style={{ borderTop: '1px dashed #ccc', margin: '10px 0' }} />
             <p style={{ margin: '5px 0' }}><strong>Vehicle:</strong> {u.vehDeets} ({u.color})</p>
             <p style={{ margin: '5px 0' }}><strong>Plate:</strong> <span style={{ background: '#eee', padding: '2px 6px', border: '1px solid #aaa', fontWeight: 'bold' }}>{u.plate}</span></p>
+
+            <div style={{display: 'flex', gap: '12px', marginTop: '10px', flexWrap: 'wrap'}}>
+              <div>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Student ID:</p>
+                {u.idPic ? (
+                  <img src={u.idPic} alt="Student ID" style={{width: '220px', maxWidth: '100%', border: '1px solid #ccc', borderRadius: '6px'}} />
+                ) : (
+                  <p className="smText">No ID image uploaded.</p>
+                )}
+              </div>
+              <div>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Driver License:</p>
+                {u.licPic ? (
+                  <img src={u.licPic} alt="Driver License" style={{width: '220px', maxWidth: '100%', border: '1px solid #ccc', borderRadius: '6px'}} />
+                ) : (
+                  <p className="smText">No license image uploaded.</p>
+                )}
+              </div>
+            </div>
             
             <button 
               onClick={() => hndlApr(u._id)} 

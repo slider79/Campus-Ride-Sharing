@@ -58,6 +58,16 @@ export const bookSeatApi = async (rideId, token) => {
   return handleResponse(response);
 };
 
+export const completeRideApi = async (rideId, token) => {
+  const response = await fetch(`${API_BASE}/rides/complete/${rideId}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return handleResponse(response);
+};
+
 export const fetchMyBookingsApi = async (token) => {
   const response = await fetch(`${API_BASE}/rides/myBookings`, {
     headers: {
